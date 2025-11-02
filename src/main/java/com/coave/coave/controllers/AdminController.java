@@ -90,6 +90,20 @@ public class AdminController {
         return ResponseEntity.ok(vehiculoService.obtenerTodos());
     }
 
+    @PutMapping("/vehiculos/{id}")
+    public ResponseEntity<Vehiculo> actualizarVehiculo(
+            @PathVariable String id,
+            @Valid @RequestBody VehiculoRequest request
+    ) {
+        return ResponseEntity.ok(vehiculoService.actualizar(id, request));
+    }
+
+    @DeleteMapping("/vehiculos/{id}")
+    public ResponseEntity<Void> eliminarVehiculo(@PathVariable String id) {
+        vehiculoService.eliminar(id);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/accesos")
     public ResponseEntity<Page<RegistroAcceso>> obtenerAccesosPaginados(
             @RequestParam(defaultValue = "0") int page,
