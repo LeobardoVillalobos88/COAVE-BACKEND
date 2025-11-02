@@ -91,7 +91,7 @@ public class ConductorController {
                 .body(imagenBytes);
     }
 
-    @GetMapping("/historial")
+    @GetMapping("accesos/historial")
     public ResponseEntity<List<RegistroAcceso>> obtenerHistorial() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Usuario conductor = usuarioRepository.findByEmail(auth.getName())
