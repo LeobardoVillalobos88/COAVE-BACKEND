@@ -1,6 +1,8 @@
 package com.coave.coave.services;
 
 import com.coave.coave.dtos.PensionRequest;
+import com.coave.coave.exception.BadRequestException;
+import com.coave.coave.exception.ResourceNotFoundException;
 import com.coave.coave.models.Pension;
 import com.coave.coave.models.enums.EstadoPension;
 import com.coave.coave.repositories.ConfiguracionRepository;
@@ -22,7 +24,7 @@ public class PensionService {
     public Pension crear(PensionRequest request) {
         pensionRepository.findByConductorIdAndEstado(request.getConductorId(), EstadoPension.ACTIVA)
                 .ifPresent(p -> {
-                    throw new RuntimeException("El conductor ya tiene una pensión activa");
+                    throw new BadRequestException("El conductor ya tiene una pensión activa");
                 });
 
         Double monto = configuracionService.obtenerConfiguracion().getTarifaPensionMensual();
@@ -43,10 +45,16 @@ public class PensionService {
 
     public Pension renovar(String pensionId) {
         Pension pension = pensionRepository.findById(pensionId)
-                .orElseThrow(() -> new RuntimeException("Pensión no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Pensión no encontrada"));
 
-        pension.setFechaInicio(LocalDate.now());
-        pension.setFechaFin(LocalDate.now().plusMonths(1));
+        // Si la pensión está cancelada, no se puede renovar
+        if (pension.getEstado() == EstadoPension.CANCELADA) {
+            throw new BadRequestException("No se puede renovar una pensión cancelada");
+        }
+
+        // Extender la fecha de fin por un mes más desde la fecha de fin actual
+        // Esto preserva el tiempo ya pagado
+        pension.setFechaFin(pension.getFechaFin().plusMonths(1));
         pension.setEstado(EstadoPension.ACTIVA);
         pension.setFechaRenovacion(LocalDateTime.now());
 
@@ -55,7 +63,7 @@ public class PensionService {
 
     public void cancelar(String pensionId) {
         Pension pension = pensionRepository.findById(pensionId)
-                .orElseThrow(() -> new RuntimeException("Pensión no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Pensión no encontrada"));
 
         pension.setEstado(EstadoPension.CANCELADA);
         pensionRepository.save(pension);
@@ -71,6 +79,10 @@ public class PensionService {
 
     public List<Pension> obtenerActivas() {
         return pensionRepository.findByEstado(EstadoPension.ACTIVA);
+    }
+
+    public List<Pension> obtenerPorEstado(EstadoPension estado) {
+        return pensionRepository.findByEstado(estado);
     }
 
     public void actualizarPensionesVencidas() {

@@ -1,10 +1,8 @@
 package com.coave.coave.controllers;
 
 import com.coave.coave.dtos.*;
-import com.coave.coave.models.Configuracion;
-import com.coave.coave.models.RegistroAcceso;
-import com.coave.coave.models.Usuario;
-import com.coave.coave.models.Vehiculo;
+import com.coave.coave.models.*;
+import com.coave.coave.models.enums.EstadoPension;
 import com.coave.coave.models.enums.Modalidad;
 import com.coave.coave.models.enums.Rol;
 import com.coave.coave.services.*;
@@ -32,6 +30,7 @@ public class AdminController {
     private final ConfiguracionService configuracionService;
     private final EstadisticasService estadisticasService;
     private final AuthService authService;
+    private final PensionService pensionService;
 
     @GetMapping("/estadisticas")
     public ResponseEntity<EstadisticasResponse> obtenerEstadisticas() {
@@ -145,5 +144,15 @@ public class AdminController {
             @Valid @RequestBody ActualizarTarifasRequest request
     ) {
         return ResponseEntity.ok(configuracionService.actualizarTarifas(request));
+    }
+
+    @GetMapping("/pensiones")
+    public ResponseEntity<List<Pension>> obtenerPensiones(
+            @RequestParam(required = false) EstadoPension estado
+    ) {
+        if (estado != null) {
+            return ResponseEntity.ok(pensionService.obtenerPorEstado(estado));
+        }
+        return ResponseEntity.ok(pensionService.obtenerTodas());
     }
 }
