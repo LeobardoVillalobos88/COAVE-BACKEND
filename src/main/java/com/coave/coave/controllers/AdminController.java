@@ -132,4 +132,18 @@ public class AdminController {
     ) {
         return ResponseEntity.ok(configuracionService.actualizar(request));
     }
+
+    @PutMapping("/configuracion/capacidad")
+    public ResponseEntity<Configuracion> actualizarCapacidad(
+            @Valid @RequestBody ActualizarCapacidadRequest request
+    ) {
+        return ResponseEntity.ok(configuracionService.actualizarCapacidad(request));
+    }
+
+    @PutMapping("/configuracion/tarifas")
+    public ResponseEntity<Configuracion> actualizarTarifas(
+            @Valid @RequestBody ActualizarTarifasRequest request
+    ) {
+        return ResponseEntity.ok(configuracionService.actualizarTarifas(request));
+    }
 }

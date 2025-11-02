@@ -1,6 +1,9 @@
 package com.coave.coave.services;
 
+import com.coave.coave.dtos.ActualizarCapacidadRequest;
+import com.coave.coave.dtos.ActualizarTarifasRequest;
 import com.coave.coave.dtos.ConfiguracionRequest;
+import com.coave.coave.exception.BadRequestException;
 import com.coave.coave.models.Configuracion;
 import com.coave.coave.repositories.ConfiguracionRepository;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +57,7 @@ public class ConfiguracionService {
 
     public Configuracion actualizar(ConfiguracionRequest request) {
         if (request.getCapacidadPorHora() + request.getCapacidadPension() != request.getCapacidadTotal()) {
-            throw new RuntimeException("La suma de capacidades por hora y pensión debe ser igual a la capacidad total");
+            throw new BadRequestException("La suma de capacidades por hora y pensión debe ser igual a la capacidad total");
         }
 
         Configuracion config = Configuracion.builder()
@@ -64,6 +67,42 @@ public class ConfiguracionService {
                 .tarifaPorHora(request.getTarifaPorHora())
                 .tarifaPensionMensual(request.getTarifaPensionMensual())
                 .qrExpiracionMinutos(request.getQrExpiracionMinutos())
+                .fechaActualizacion(LocalDateTime.now())
+                .build();
+
+        return configuracionRepository.save(config);
+    }
+
+    public Configuracion actualizarCapacidad(ActualizarCapacidadRequest request) {
+        if (request.getCapacidadPorHora() + request.getCapacidadPension() != request.getCapacidadTotal()) {
+            throw new BadRequestException("La suma de capacidades por hora y pensión debe ser igual a la capacidad total");
+        }
+
+        Configuracion configActual = obtenerConfiguracion();
+
+        Configuracion config = Configuracion.builder()
+                .capacidadTotal(request.getCapacidadTotal())
+                .capacidadPorHora(request.getCapacidadPorHora())
+                .capacidadPension(request.getCapacidadPension())
+                .tarifaPorHora(configActual.getTarifaPorHora())
+                .tarifaPensionMensual(configActual.getTarifaPensionMensual())
+                .qrExpiracionMinutos(configActual.getQrExpiracionMinutos())
+                .fechaActualizacion(LocalDateTime.now())
+                .build();
+
+        return configuracionRepository.save(config);
+    }
+
+    public Configuracion actualizarTarifas(ActualizarTarifasRequest request) {
+        Configuracion configActual = obtenerConfiguracion();
+
+        Configuracion config = Configuracion.builder()
+                .capacidadTotal(configActual.getCapacidadTotal())
+                .capacidadPorHora(configActual.getCapacidadPorHora())
+                .capacidadPension(configActual.getCapacidadPension())
+                .tarifaPorHora(request.getTarifaPorHora())
+                .tarifaPensionMensual(request.getTarifaPensionMensual())
+                .qrExpiracionMinutos(configActual.getQrExpiracionMinutos())
                 .fechaActualizacion(LocalDateTime.now())
                 .build();
 
