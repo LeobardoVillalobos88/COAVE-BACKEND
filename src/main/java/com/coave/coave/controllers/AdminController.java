@@ -1,16 +1,19 @@
 package com.coave.coave.controllers;
 
-import com.coave.coave.dtos.ConfiguracionRequest;
-import com.coave.coave.dtos.EstadisticasResponse;
-import com.coave.coave.dtos.RegistroUsuarioRequest;
+import com.coave.coave.dtos.*;
 import com.coave.coave.models.Configuracion;
 import com.coave.coave.models.RegistroAcceso;
 import com.coave.coave.models.Usuario;
 import com.coave.coave.models.Vehiculo;
+import com.coave.coave.models.enums.Modalidad;
 import com.coave.coave.models.enums.Rol;
 import com.coave.coave.services.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +36,18 @@ public class AdminController {
     @GetMapping("/estadisticas")
     public ResponseEntity<EstadisticasResponse> obtenerEstadisticas() {
         return ResponseEntity.ok(estadisticasService.obtenerEstadisticas());
+    }
+
+    @GetMapping("/estadisticas/ingresos-mes")
+    public ResponseEntity<IngresosMesResponse> obtenerIngresosMes() {
+        return ResponseEntity.ok(estadisticasService.obtenerIngresosMes());
+    }
+
+    @GetMapping("/estadisticas/accesos-modalidad")
+    public ResponseEntity<List<AccesosPorModalidadResponse>> obtenerAccesosPorModalidad() {
+        AccesosPorModalidadResponse porHora = estadisticasService.obtenerAccesosPorModalidad(Modalidad.POR_HORA);
+        AccesosPorModalidadResponse pension = estadisticasService.obtenerAccesosPorModalidad(Modalidad.PENSION);
+        return ResponseEntity.ok(List.of(porHora, pension));
     }
 
     @GetMapping("/usuarios")
@@ -73,6 +88,18 @@ public class AdminController {
     @GetMapping("/vehiculos")
     public ResponseEntity<List<Vehiculo>> obtenerVehiculos() {
         return ResponseEntity.ok(vehiculoService.obtenerTodos());
+    }
+
+    @GetMapping("/accesos")
+    public ResponseEntity<Page<RegistroAcceso>> obtenerAccesosPaginados(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "fechaHora") String sortBy,
+            @RequestParam(defaultValue = "DESC") String direction
+    ) {
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+        return ResponseEntity.ok(accesoService.obtenerTodosPaginado(pageable));
     }
 
     @GetMapping("/registros")

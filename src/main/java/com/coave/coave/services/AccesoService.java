@@ -12,6 +12,8 @@ import com.coave.coave.models.enums.Modalidad;
 import com.coave.coave.repositories.RegistroAccesoRepository;
 import com.coave.coave.repositories.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -136,6 +138,10 @@ public class AccesoService {
 
     public List<RegistroAcceso> obtenerTodos() {
         return registroAccesoRepository.findAll();
+    }
+
+    public Page<RegistroAcceso> obtenerTodosPaginado(Pageable pageable) {
+        return registroAccesoRepository.findAll(pageable);
     }
 
     public List<RegistroAcceso> obtenerAccesosActivos() {
