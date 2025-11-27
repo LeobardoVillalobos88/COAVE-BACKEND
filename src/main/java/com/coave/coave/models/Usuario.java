@@ -37,4 +37,9 @@ public class Usuario {
     private LocalDateTime fechaActualizacion;
 
     private boolean activo;
+
+    // <CHANGE> Nuevos campos para OAuth2
+    private String provider;        // "local" o "google"
+    private String providerId;      // ID del usuario en Google
+    private String avatarUrl;       // Foto de perfil de Google
 }

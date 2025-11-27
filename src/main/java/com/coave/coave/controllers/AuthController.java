@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -25,5 +27,12 @@ public class AuthController {
     @PostMapping("/registro")
     public ResponseEntity<Usuario> registrar(@Valid @RequestBody RegistroUsuarioRequest request) {
         return ResponseEntity.ok(authService.registrarUsuario(request));
+    }
+
+    @GetMapping("/oauth2/url/google")
+    public ResponseEntity<Map<String, String>> getGoogleAuthUrl() {
+        // Actualiza la ruta aquí también por consistencia
+        String authUrl = "/api/auth/oauth2/authorize/google";
+        return ResponseEntity.ok(Map.of("url", authUrl));
     }
 }
