@@ -47,6 +47,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR")
                         .requestMatchers("/api/guardia/**").hasAnyRole("GUARDIA", "ADMINISTRADOR")
                         .requestMatchers("/api/conductor/**").hasAnyRole("CONDUCTOR", "ADMINISTRADOR")
+                        .requestMatchers("/api/usuario/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 // Configuración OAuth2 Login (Google)
