@@ -35,7 +35,7 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("url", authUrl));
     }
 
-    @PostMapping("/recuperar-password")
+    @PostMapping("/recuperar-contrasena")
     public ResponseEntity<MensajeResponse> solicitarRecuperacion(
             @Valid @RequestBody SolicitarRecuperacionRequest request) {
         return ResponseEntity.ok(recuperacionService.solicitarRecuperacion(request));
@@ -46,7 +46,7 @@ public class AuthController {
         return ResponseEntity.ok(recuperacionService.validarToken(token));
     }
 
-    @PostMapping("/restablecer-password")
+    @PostMapping("/restablecer-contrasena")
     public ResponseEntity<MensajeResponse> restablecerContrasena(
             @Valid @RequestBody RestablecerContrasenaRequest request) {
         return ResponseEntity.ok(recuperacionService.restablecerContrasena(request));

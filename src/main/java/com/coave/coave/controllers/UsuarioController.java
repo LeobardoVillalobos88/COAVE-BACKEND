@@ -16,7 +16,7 @@ public class UsuarioController {
 
     private final RecuperacionService recuperacionService;
 
-    @PutMapping("/cambiar-password")
+    @PutMapping("/cambiar-contrasena")
     public ResponseEntity<MensajeResponse> cambiarContrasena(
             Authentication authentication,
             @Valid @RequestBody CambiarContrasenaRequest request) {
