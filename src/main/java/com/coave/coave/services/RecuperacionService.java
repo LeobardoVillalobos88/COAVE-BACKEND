@@ -136,12 +136,12 @@ public class RecuperacionService {
     }
 
     @Transactional
-    public MensajeResponse cambiarContrasena(String usuarioId, CambiarContrasenaRequest request) {
+    public MensajeResponse cambiarContrasena(String usuarioEmail, CambiarContrasenaRequest request) {
         if (!request.getNuevaContrasena().equals(request.getConfirmarContrasena())) {
             throw new BadRequestException("Las contraseñas no coinciden");
         }
 
-        Usuario usuario = usuarioRepository.findById(usuarioId)
+        Usuario usuario = usuarioRepository.findByEmail(usuarioEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
         if (!passwordEncoder.matches(request.getContrasenaActual(), usuario.getContrasena())) {
